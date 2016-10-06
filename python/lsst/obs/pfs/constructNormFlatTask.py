@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-import os
-import pyfits
 import math
 import lsst.afw.image as afwImage
 import numpy as np
-import lsst.afw.display as afwDisplay
 import pfs.drp.stella as drpStella
 import lsst.daf.persistence as dafPersist
-import pfs.drp.stella.findAndTraceAperturesTask as fataTask
 import pfs.drp.stella.createFlatFiberTraceProfileTask as cfftpTask
 #from lsst.utils import getPackageDir
 from lsst.pipe.drivers.constructCalibs import CalibConfig, CalibTask
@@ -30,42 +26,6 @@ class ConstructNormFlatConfig(CalibConfig):
     repair = ConfigurableField(target=RepairTask, doc="Task to repair artifacts")
     darkTime = Field(dtype=str, default="DARKTIME", doc="Header keyword for time since last CCD wipe, or None",
                      optional=True)
-
-#class ConstructNormFlatConfig(Config):
-#    """Configuration for reducing arc images"""
-#    function = Field( doc = "Function for fitting the dispersion", dtype=str, default="POLYNOMIAL" );
-#    order = Field( doc = "Fitting function order", dtype=int, default = 5 );
-#    searchRadius = Field( doc = "Radius in pixels relative to line list to search for emission line peak", dtype = int, default = 2 );
-#    fwhm = Field( doc = "FWHM of emission lines", dtype=float, default = 2.6 );
-#    nRowsPrescan = Field( doc = "Number of prescan rows in raw CCD image", dtype=int, default = 49 );
-#    wavelengthFile = Field( doc = "reference pixel-wavelength file including path", dtype = str, default=os.path.join(getPackageDir("obs_pfs"), "pfs/RedFiberPixels.fits.gz"));
-#    lineList = Field( doc = "reference line list including path", dtype = str, default=os.path.join(getPackageDir("obs_pfs"), "pfs/lineLists/CdHgKrNeXe_red.fits"));
-
-#class ConstructNormFlatTaskRunner(TaskRunner):
-#    """Get parsed values into the ConstructNormFlatTask.run"""
-#    @staticmethod
-#    def getTargetList(parsedCmd, **kwargs):
-#        print 'ConstructNormFlatTask.getTargetList: kwargs = ',kwargs
-#        return [dict(expRefList=parsedCmd.id.refList, butler=parsedCmd.butler)]#, wLenFile=parsedCmd.wLenFile, lineList=parsedCmd.lineList)]
-#
-#    def __call__(self, args):
-#        task = self.TaskClass(config=self.config, log=self.log)
-#        if self.doRaise:
-#            self.log.info('ConstructNormFlatTask.__call__: args = %s' % args)
-#            result = task.run(**args)
-#        else:
-#            try:
-#                result = task.run(**args)
-#            except Exception, e:
-#                task.log.fatal("Failed: %s" % e)
-##                traceback.print_exc(file=sys.stderr)
-#
-#        if self.doReturnResults:
-#            return Struct(
-#                args = args,
-#                metadata = task.metadata,
-#                result = result,
-#            )
 
 class ConstructNormFlatTask(CalibTask):
     """Task to construct the normalized Flat"""
@@ -125,8 +85,6 @@ class ConstructNormFlatTask(CalibTask):
 
 #        flatVisits = []#29,41,42,44,45,46,47,48,49,51,53]
         
-        myFindTask = fataTask.FindAndTraceAperturesTask()
-        
         exposure = dataRefList[0].get('postISRCCD')
         
         sumFlats = exposure.getMaskedImage().getImage().getArray()
@@ -137,7 +95,8 @@ class ConstructNormFlatTask(CalibTask):
         for expRef in dataRefList:
             exposure = expRef.get('postISRCCD')
             xOffsets.append(exposure.getMetadata().get('sim.slit.xoffset'))
-            fts = myFindTask.run(exposure)
+            fiberTrace = expRef.get('fiberTrace')
+            fts = 
             allFts.append(fts)
             if expRef.dataId['visit'] != dataRefList[0].dataId['visit']:
                 sumFlats += exposure.getMaskedImage().getImage().getArray()
