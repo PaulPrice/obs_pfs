@@ -1,21 +1,17 @@
 #!/usr/bin/env python
-import math
 import lsst.afw.image as afwImage
+import lsst.afw.detection as afwDet
+from lsst.ctrl.pool.pool import NODE
+import lsst.meas.algorithms as measAlg
+from lsst.pex.config import Field, ConfigurableField
+from lsst.pipe.drivers.constructCalibs import CalibConfig, CalibTask
+from lsst.pipe.drivers.utils import getDataRef
+from lsst.pipe.tasks.repair import RepairTask
+import math
 import numpy as np
 import pfs.drp.stella as drpStella
-import lsst.daf.persistence as dafPersist
 import pfs.drp.stella.createFlatFiberTraceProfileTask as cfftpTask
-#from lsst.utils import getPackageDir
-from lsst.pipe.drivers.constructCalibs import CalibConfig, CalibTask
-from lsst.pex.config import Field, ConfigurableField
-from lsst.pipe.tasks.repair import RepairTask
-import lsst.meas.algorithms as measAlg
-import lsst.afw.detection as afwDet
-from lsst.pipe.drivers.utils import getDataRef
-from lsst.ctrl.pool.pool import NODE
-#from lsst.pipe.base import Struct, TaskRunner, ArgumentParser, CmdLineTask
-#import matplotlib.pyplot as plt
-
+from pfs.drp.stella.utils import makeFiberTraceSet
 
 class ConstructNormFlatConfig(CalibConfig):
     """Configuration for flat construction"""
@@ -31,8 +27,7 @@ class ConstructNormFlatTask(CalibTask):
     """Task to construct the normalized Flat"""
     ConfigClass = ConstructNormFlatConfig
     _DefaultName = "constructNormFlat"
-    calibName = "flat"
-#    filterName = "NONE"  # Sets this filter name in the output
+    calibName = "fiberFlat"
 
     def __init__(self, *args, **kwargs):
         CalibTask.__init__(self, *args, **kwargs)
@@ -95,8 +90,8 @@ class ConstructNormFlatTask(CalibTask):
         for expRef in dataRefList:
             exposure = expRef.get('postISRCCD')
             xOffsets.append(exposure.getMetadata().get('sim.slit.xoffset'))
-            fiberTrace = expRef.get('fiberTrace')
-            fts = 
+            fiberTrace = expRef.get('fiberTrace', immediate=True)
+            fts = makeFiberTraceSet(fiberTrace, exposure)
             allFts.append(fts)
             if expRef.dataId['visit'] != dataRefList[0].dataId['visit']:
                 sumFlats += exposure.getMaskedImage().getImage().getArray()
