@@ -62,7 +62,7 @@ else:
 
 Row = collections.namedtuple("Row", ["calibDate", "calibVersion", "spectrograph", "arm", "ccd"])
 
-for calib in ('bias', 'dark', 'flat', 'fiberFlat', 'imageFlat', 'fiberTrace'):
+for calib in ('arc', 'bias', 'dark', 'fiberFlat', 'fiberTrace', 'flat', 'imageFlat'):
     if isSqlite:
         cmd = "create table " + calib.lower() + " (id integer primary key autoincrement"
         cmd += ", validStart text, validEnd text"
