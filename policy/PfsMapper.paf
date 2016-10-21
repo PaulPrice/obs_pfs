@@ -192,6 +192,14 @@ datasets: {
         tables:        raw
         tables:        raw_visit
     }
+    constructArc_config: {
+        template:      "config/arc.py"
+        python:        "lsst.obs.pfs.constructArc.ConstructArcConfig"
+        persistable:   "Config"
+        storage:       "ConfigStorage"
+        tables:        raw
+        tables:        raw_visit
+    }
     dark_config: {
         template:      "config/dark.py"
         python:        "lsst.pipe.drivers.constructCalibs.DarkConfig"
