@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 import lsst.afw.detection as afwDet
-#import lsst.afw.image as afwImage
-#from lsst.ctrl.pool.pool import NODE
 import lsst.meas.algorithms as measAlg
 from lsst.pex.config import Field, ConfigurableField
 from lsst.pipe.drivers.constructCalibs import CalibConfig, CalibTask
 from lsst.pipe.tasks.repair import RepairTask
-#from lsst.pipe.drivers.utils import getDataRef
 import math
-#import numpy as np
-#from pfs.datamodel.pfsFiberTrace import PfsFiberTrace
-#import pfs.drp.stella.createFlatFiberTraceProfileTask as cfftpTask
-#import pfs.drp.stella.findAndTraceAperturesTask as fataTask
 
 class ConstructArcConfig(CalibConfig):
     """Configuration for Arc construction"""
