@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+import os
 import lsst.afw.detection as afwDet
 import lsst.meas.algorithms as measAlg
 from lsst.pex.config import Field, ConfigurableField
 from lsst.pipe.drivers.constructCalibs import CalibConfig, CalibTask
 from lsst.pipe.tasks.repair import RepairTask
+from lsst.utils import getPackageDir
 import math
 
 class ConstructArcConfig(CalibConfig):
