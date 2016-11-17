@@ -117,16 +117,22 @@ class PfsFiberTraceTestCase(tests.TestCase):
 #        self.assertEqual(pfsFiberTrace.coeffs = []
 #        self.assertEqual(pfsFiberTrace.profiles = []
 
-        print 'self.flat = ',self.flat
+
+
+
         ftsNew = makeFiberTraceSet(pfsFiberTraceNew)#, self.flat.getMaskedImage())
-        # copy trace coefficients from old FiberTraceSet to new one to make sure
+
+        
+        # copy trace coefficients from old FiberTraceSet to new one and recalculate
+        # xCenters to make sure
         # the one row with 1 pixel offset is not caused by the FiberTraceFunction
         for iFt in range(ftsNew.size()):
-            print 'ftsNew.getFiberTrace(',iFt,').getTraceCoefficients() = ',ftsNew.getFiberTrace(iFt).getTraceCoefficients()
-            ftsNew.getFiberTrace(iFt).setTraceCoefficients(fiberTraceSet.getFiberTrace(iFt).getTraceCoefficients())
-            ftsNew.getFiberTrace(iFt).createTrace(self.flat.getMaskedImage())
-            print 'ftsNew.getFiberTrace(',iFt,').getTraceCoefficients() = ',ftsNew.getFiberTrace(iFt).getTraceCoefficients()
-            print 'fiberTraceSet.getFiberTrace(',iFt,').getTraceCoefficients() = ',fiberTraceSet.getFiberTrace(iFt).getTraceCoefficients()
+            fiberTrace = ftsNew.getFiberTrace(iFt)
+            fiberTraceFunction = fiberTrace.getFiberTraceFunction()
+            fiberTraceFunction.setCoefficients(fiberTraceSet.getFiberTrace(iFt).getTraceCoefficients())
+            xCenters = drpStella.calculateXCenters(fiberTraceFunction)
+            fiberTrace.setXCenters(xCenters)
+            fiberTrace.createTrace(self.flat.getMaskedImage())
         
         self.assertEqual(fiberTraceSet.size(), ftsNew.size())
         for iFt in range(ftsNew.size()):
@@ -185,7 +191,7 @@ class PfsFiberTraceTestCase(tests.TestCase):
                 for iY in range(image.shape[1]):
                     if np.abs(image[iX,iY] - imageNew[iX,iY]) > 0.1:
                         print 'FiberTrace ',iFt,': large difference detected: image[',iX,',',iY,'] = ',image[iX,iY],', imageNew[',iX,',',iY,'] = ',imageNew[iX,iY],'      xCenters[',iX,'] = ',xCenters[iX],', xCentersNew[',iX,'] = ',xCentersNew[iX]
-                    #self.assertAlmostEqual(image[iX,iY], imageNew[iX,iY], places=3)
+                    self.assertAlmostEqual(image[iX,iY], imageNew[iX,iY], places=3)
             
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
