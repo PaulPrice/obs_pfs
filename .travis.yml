@@ -1,0 +1,28 @@
+# This is a template for other packages (i.e., beside pipe2d) to use as
+# a ".travis.yml" file to enable Travis-CI. This enables CI on the
+# entire pipeline when changing only a single product in the stack.
+
+language: python
+sudo: false
+python:
+  - 2.7
+#  - 3.5
+os:
+  - linux
+#  - osx
+matrix:
+  fast_finish: true
+notifications:
+  email: false
+
+install: true
+script: /bin/bash travis.sh
+
+cache:
+  directories:
+    - $HOME/pfs
+  timeout: 1000
+before_cache:
+  - find $HOME/.casher -name "*.tgz" -print -exec rm {} \;
+  - rm -r -f $HOME/pfs/pfs
+  - rm -r -f $HOME/pfs/tutorial
